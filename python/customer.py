@@ -40,14 +40,22 @@ class Customer:
     
     # 購入候補となる商品の選択
     def select_item(self, cur_best_item, items):
-        if cur_best_item is not None and not(self.store.has_item(cur_best_item)):
-            return random.choice(items), 'no_cur_best_item'
+        #import pdb; pdb.set_trace()
+        try:
+            if cur_best_item is not None and not(self.store.has_item(cur_best_item)):
+                idx = random.choice(list(items.keys()))
+                return items[idx], 'no_cur_best_item'
+            if cur_best_item is None or random.random() < self.epsilon: #新規探求
+                idx = random.choice(list(items.keys())) 
+                return items[idx], 'novelty'
+            else:
+                return cur_best_item, 'cur_best_item'
         
-        if cur_best_item is None or random.random() < self.epsilon: #新規探求
-            return random.choice(items), 'novelty'
-        else:
-            return cur_best_item, 'cur_best_item'
-    
+        except Exception as e:
+            print("Error:", e)
+            import pdb; pdb.set_trace()
+            
+           
     def is_purchase(self, item):
         if self.calc_benefit(item) > 0:
             return True
